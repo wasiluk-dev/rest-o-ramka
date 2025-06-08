@@ -1,58 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Home from "./sites/Home.tsx";
+import Flights from "./sites/Flights.tsx";
+import BuyTicket from "./sites/BuyTicket.tsx";
+import CheckTicket from "./sites/CheckTicket.tsx";
+import NotFound from "./sites/NotFound.tsx";
 
-type User = {
-    id: number;
-    name: string;
-};
+// type User = {
+//     id: number;
+//     name: string;
+// };
 
 function App() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [name, setName] = useState('');
-
-    const API_URL = 'http://localhost:4000/api/users';
-
-    // GET
-    const fetchUsers = async () => {
-        const res = await axios.get<User[]>(API_URL);
-        setUsers(res.data);
-    };
-
-    // POST
-    const addUser = async () => {
-        if (!name.trim()) return;
-        const res = await axios.post<User>(API_URL, { name });
-        setUsers([...users, res.data]);
-        setName('');
-    };
-
-    // DELETE
-    const deleteUser = async (id: number) => {
-        await axios.delete(`${API_URL}/${id}`);
-        setUsers(users.filter((u) => u.id !== id));
-    };
-
-    // PUT
-    const updateUser = async (id: number) => {
-        const newName = prompt('Nowe imię:', 'Nowe Imię');
-        if (newName) {
-            const res = await axios.put(`${API_URL}/${id}`, { name: newName });
-            setUsers(users.map((u) => (u.id === id ? res.data : u)));
-        }
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    type Product = { id: number, name: string, price: number };
-
-    const fetchProducts = async () => {
-        const response = await axios.get<Product[]>('http://localhost:4000/api/products');
-        console.log(response.data);
-    };
-    fetchProducts();
+    // const [users, setUsers] = useState<User[]>([]);
+    // const [name, setName] = useState('');
+    //
+    // const API_URL = 'http://localhost:4000/api/users';
+    //
+    // // GET
+    // const fetchUsers = async () => {
+    //     const res = await axios.get<User[]>(API_URL);
+    //     setUsers(res.data);
+    // };
+    //
+    // // POST
+    // const addUser = async () => {
+    //     if (!name.trim()) return;
+    //     const res = await axios.post<User>(API_URL, { name });
+    //     setUsers([...users, res.data]);
+    //     setName('');
+    // };
+    //
+    // // DELETE
+    // const deleteUser = async (id: number) => {
+    //     await axios.delete(`${API_URL}/${id}`);
+    //     setUsers(users.filter((u) => u.id !== id));
+    // };
+    //
+    // // PUT
+    // const updateUser = async (id: number) => {
+    //     const newName = prompt('Nowe imię:', 'Nowe Imię');
+    //     if (newName) {
+    //         const res = await axios.put(`${API_URL}/${id}`, { name: newName });
+    //         setUsers(users.map((u) => (u.id === id ? res.data : u)));
+    //     }
+    // };
+    //
+    // useEffect(() => {
+    //     fetchUsers();
+    // }, []);
+    //
+    // type Product = { id: number, name: string, price: number };
+    //
+    // const fetchProducts = async () => {
+    //     const response = await axios.get<Product[]>('http://localhost:4000/api/products');
+    //     console.log(response.data);
+    // };
+    // fetchProducts();
 
     return (
         // <div style={{ padding: 20 }}>
@@ -76,7 +79,11 @@ function App() {
         // </div>
         <BrowserRouter>
             <Routes>
-                <Route path="/" component={App} />
+                <Route path="/" element={<Home />} />
+                <Route path="/Flights" element={<Flights />} />
+                <Route path="/BuyTicket" element={<BuyTicket />} />
+                <Route path="/CheckTicket" element={<CheckTicket />} />
+                <Route path="/*" element={<NotFound />} />
             </Routes>
         </BrowserRouter>
     );
