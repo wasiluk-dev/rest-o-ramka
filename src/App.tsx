@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 type User = {
     id: number;
@@ -54,25 +55,30 @@ function App() {
     fetchProducts();
 
     return (
-        <div style={{ padding: 20 }}>
-            <h1>Użytkownicy</h1>
-            <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Imię"
-            />
-            <button onClick={addUser}>Dodaj</button>
-
-            <ul>
-                {users.map((user) => (
-                    <li key={user.id}>
-                        {user.name}{' '}
-                        <button onClick={() => updateUser(user.id)}>✏️ Edytuj</button>{' '}
-                        <button onClick={() => deleteUser(user.id)}>🗑️ Usuń</button>
-                    </li>
-                ))}
-            </ul>
-        </div>
+        // <div style={{ padding: 20 }}>
+        //     <h1>Użytkownicy</h1>
+        //     <input
+        //         value={name}
+        //         onChange={(e) => setName(e.target.value)}
+        //         placeholder="Imię"
+        //     />
+        //     <button onClick={addUser}>Dodaj</button>
+        //
+        //     <ul>
+        //         {users.map((user) => (
+        //             <li key={user.id}>
+        //                 {user.name}{' '}
+        //                 <button onClick={() => updateUser(user.id)}>✏️ Edytuj</button>{' '}
+        //                 <button onClick={() => deleteUser(user.id)}>🗑️ Usuń</button>
+        //             </li>
+        //         ))}
+        //     </ul>
+        // </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" component={App} />
+            </Routes>
+        </BrowserRouter>
     );
 }
 
