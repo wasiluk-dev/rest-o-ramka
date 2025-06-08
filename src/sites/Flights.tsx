@@ -1,13 +1,13 @@
 import React from "react";
 import Header from "../components/Header/Header.tsx";
 
-const Home:React.FC = () => {
+const Flights:React.FC = () => {
     return(
         <>
-        <Header/>
-            Witaj w nszej aplikaji, whatever
+            <Header/>
+            Tutaj będzie lista lotów
         </>
     );
 }
 
-export default Home;
+export default Flights;
