@@ -33,6 +33,7 @@ const CheckTicket:React.FC = () => {
             alert("Uzupełnij pole!")
         }
     }
+
     return(
         <>
             <Header/>
