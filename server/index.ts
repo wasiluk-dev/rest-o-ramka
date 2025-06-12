@@ -4,6 +4,7 @@ import { Flight } from './models/Flight';
 import { Reservation } from './models/Reservation';
 import bodyParser from 'body-parser';
 import { createPDFBuffer } from './utils/PDF';
+import { createFlightLinks, createReservationLinks } from "./utils/HATEOAS";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -15,27 +16,50 @@ app.use(bodyParser.json());
 mongoose.connect(`mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_IP}:27017/restoramka?authSource=admin`).then(() => {
     app.get('/flights', async (_req, res) => {
         const flights = await Flight.find();
-        res.json(flights);
+
+        const result = flights.map(f => ({
+            ...f.toObject(),
+            _links: createFlightLinks(f)
+        }));
+
+        res.json(result);
     });
 
-    // 1. Dodanie lotu
     app.post('/flights', async (req, res) => {
         const flight = new Flight(req.body);
         await flight.save();
         res.status(201).json(flight);
     });
 
+
     // 2. Wyszukiwanie lotów z dynamicznymi parametrami
     app.get('/flights/search', async (req, res) => {
-        const { fromCity, toCity, date } = req.query;
+        const { fromCity, toCity, date } = req.query as Record<string,string>;
         const filter: any = {};
-
         if (fromCity) filter.fromCity = fromCity;
-        if (toCity) filter.toCity = toCity;
-        if (date) filter.date = new Date(date as string);
+        if (toCity)   filter.toCity = toCity;
+        if (date)     filter.date = new Date(date);
 
         const flights = await Flight.find(filter);
-        res.json(flights);
+
+        const result = flights.map(f => ({
+            ...f.toObject(),
+            _links: createFlightLinks(f, { fromCity, toCity, date })
+        }));
+
+        res.json(result);
+    });
+
+    app.get('/flights/:id', async (req, res) => {
+        const flight = await Flight.findById(req.params.id);
+        if (!flight) return res.status(404).json({ error: 'Not found' });
+
+        const flightWithLinks = {
+            ...flight.toObject(),
+            _links: createFlightLinks(flight)
+        };
+
+        res.json(flightWithLinks);
     });
 
     // 3. Kupno biletu
@@ -63,7 +87,10 @@ mongoose.connect(`mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PA
         });
 
         await reservation.save();
-        res.status(201).json({ reservationNumber });
+        res.status(201).json({
+            reservationNumber,
+            _links: createReservationLinks({ reservationNumber, flight: flightId })
+        });
     });
 
     // 4. Odbiór potwierdzenia w PDF
@@ -85,7 +112,10 @@ mongoose.connect(`mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PA
             return res.status(404).json({ error: 'Not found' });
         }
 
-        res.json(reservation);
+        res.json({
+            ...reservation.toObject(),
+            _links: createReservationLinks(reservation)
+        });
     });
 
     app.listen(PORT, () => {
