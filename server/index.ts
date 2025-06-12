@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import { Flight } from './models/Flight';
 import { Reservation } from './models/Reservation';
 import bodyParser from 'body-parser';
@@ -11,6 +12,7 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+app.use(cors());
 app.use(bodyParser.json());
 
 mongoose.connect(`mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_IP}:27017/restoramka?authSource=admin`).then(() => {
